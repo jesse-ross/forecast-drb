@@ -38,7 +38,8 @@ list(
   ##### READ/FORMAT DATA? #####
 
   # Find the available forecast dates based on the forecast file names
-  tar_target(p2_forecast_dates, str_extract(p1_modelpreds_daily_files, "([0-9]{4})-([0-9]{2})-([0-9]{2})") %>% unique() %>% as.Date())
+  tar_target(p2_forecast_dates, str_extract(p1_modelpreds_daily_files, "([0-9]{4})-([0-9]{2})-([0-9]{2})") %>% unique() %>% as.Date()),
+  tar_target(p2_forecast_seg_ids, str_extract(p1_modelpreds_daily_files, "nat\\[([0-9]{4})\\]") %>% unique())
 
   ##### VISUALIZE DATA? #####
 )
