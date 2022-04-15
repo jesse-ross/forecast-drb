@@ -4,11 +4,7 @@ Pipeline and code for downloading and creating an updated visualization to accom
 
 ## How to build
 
-This repo contains a lightweight `targets` pipeline to download data from the USGS data repository, ScienceBase, using `sbtools` and then create output visuals. To run the full pipeline, install all necessary packages and then run `targets::tar_make()`.
-
-* To just download the data, run `targets::tar_make(dplyr::starts_with("p1_"))`. This step takes about 1 minute.
-* ...
-* ...
+This repo contains a lightweight `targets` pipeline to load data from the forecast outputs (manually downloaded from [here](https://code.usgs.gov/wma/wp/forecast-preprint-code/-/tree/main/in) for now) and then create output visuals. To run the full pipeline, install all necessary packages and then run `targets::tar_make()`.
 
 ## Output
 
