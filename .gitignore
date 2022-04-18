@@ -4,3 +4,10 @@
 .Ruserdata
 .DS_Store
 *.Rproj
+
+# Target build files
+_targets/*
+
+1_fetch/out/*
+1_fetch/in/*
+!*/*/.placeholder
