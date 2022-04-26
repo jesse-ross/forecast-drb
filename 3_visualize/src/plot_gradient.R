@@ -1,4 +1,4 @@
-plot_gradient <- function(ensemble_data, site_info, date_start, days_shown){
+plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_file){
   
   # filter data to a focal time period
   date_start <- as.Date(date_start)
@@ -20,25 +20,6 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown){
   temp_obs <- plot_df %>% 
     distinct(time, site_name, site_label, obs_max_temp_f)
   
-  # custom color scale 
-  start <- 42 # lower bound gradient
-  end <- c_to_f(threshold) # threshold
-  
-  # create gradient up until threshold
-  col_lapaz <- scico::scico(50, palette = "lapaz", direction = 1)[1:((1+end)-start)]  
-
-  # extend scale with 5 degree steps
-  deg_step <- 5
-  col_lapaz_ext <- c(rep("royalblue",deg_step), 
-                     rep("dodgerblue", deg_step),
-                     col_lapaz,
-                     rep("orangered",deg_step),
-                     rep("red", deg_step))
-
-  deg_num <- as.factor(c((start-(2*deg_step)):(end+(2*deg_step))))
-  names(col_lapaz_ext) <- deg_num
-  
-  
   # plot 1-day out predictions with mean prediction and observed
   plot_df %>%
     ggplot(
@@ -57,28 +38,43 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown){
                alpha = 0.8) +
     # panel for each site
     facet_grid(~ site_name) + 
-    stat_gradientinterval(.width = c(.95),
+    stat_gradientinterval(.width = c(0),
+                          shape = NA,
                           width =.95,
                           # sub values over threshold with NA
                           aes(fill = ifelse(stat(y) > c_to_f(threshold), NA, stat(y))), 
-                          fill_type = "gradient",
                           size = 0.5) +
     # gradient color scale, using red for NA (over threshold)
     scico::scale_fill_scico(palette = "lapaz", 
-                            end = 0.75,
+                            end = 0.7,
                             na.value = "orangered") +
-    # tile to make observed temp
-    geom_tile(data = temp_obs,
-              aes(x = time,
-                  y = obs_max_temp_f,
-                  fill = obs_max_temp_f),  
+    scico::scale_color_scico(palette = "lapaz", 
+                            end = 0.5,
+                            na.value = "orangered") +
+    # tile for mean prediction
+    geom_tile(aes(x = time,
+                  y = pred_max_temp_f,
+                  fill = ifelse(stat(y) > c_to_f(threshold), NA, stat(y))),  
+              stat = "summary",
+              fun = "mean",
               size = 1,
               height = .4,
               width = .8,
               alpha = 1,
               color = NA) +
+    # observed temperature
+    geom_point(data = temp_obs, 
+               aes(
+                 x = time,
+                 y = obs_max_temp_f,
+                 color = ifelse(stat(y) > c_to_f(threshold), NA, stat(y))
+               ),
+               shape = 21,
+               stroke = 1,
+               size = 1.5, 
+               fill = "white") +
     theme(legend.position = "none",
-          axis.text=element_text(size=8, angle = 0),
+          axis.text=element_text(size=8, angle = 0, hjust = 0),
           strip.background = element_rect(color = NA, fill = NA),
           axis.text.y = element_text(color = c(rep("black", 4), "orangered", "black")),
           panel.background = element_rect(color="grey", fill=NA),
@@ -86,18 +82,11 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown){
           strip.text = element_text(face = "bold"))+
     scale_y_continuous(position = "left") +
     scale_x_date(breaks = scales::breaks_width("1 day"),
-                 labels = scales::label_date_short()) +
-    scale_fill_manual(values = c("darkgrey", "orangered"))+
-    geom_tile(data = temp_obs,
-                aes(x = time,
-                    y = obs_max_temp_f,
-                    ),  
-                size = 1,
-                height = .4,
-                width = .8,
-                alpha = 1,
-                color = NA)
-
+                 labels = scales::label_date_short()) 
+  
+  ggsave(out_file, width = 1600, height = 900, dpi = 300, units = "px")
+  
+  return(out_file)
   
 }
 
