@@ -74,7 +74,7 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
                size = 1.25, 
                fill = "white") +
     theme(legend.position = "none",
-          axis.text=element_text(size = 6, angle = 0, hjust = 1),
+          axis.text=element_text(size = 6, angle = 0, hjust = 0.5),
           strip.background = element_rect(color = NA, fill = NA),
           # color for axis labels - throws an error, ignore that
           axis.text.y = element_text(color = c(rep("black", 4), "orangered", "black")),
