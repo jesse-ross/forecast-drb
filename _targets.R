@@ -41,7 +41,8 @@ list(
   ##### VISUALIZE DATA #####
   tar_target(
     p3_daily_gradient_interval_png,
-    plot_gradient(p1_forecast_data,
+    plot_gradient(ensemble_data = p1_ensemble_data,
+                  site_info = p2_site_info,
                   date_start = "2021-06-28",
                   days_shown = 6)
   )
