@@ -8,6 +8,7 @@ tar_option_set(packages = c(
 
 source('2_process/src/temp_utils.R')
 source('3_visualize/src/plot_gradient.R')
+source('3_visualize/src/map_exceedance_prob.R')
 
 list(
 
@@ -76,6 +77,14 @@ list(
                   date_start = "2021-06-28",
                   days_shown = 6,
                   out_file = "3_visualize/out/daily_gradient_interval.png"),
+    format = "file"
+  ),
+
+  tar_target(
+    p3_seg_exceedance_map_png,
+    map_exceedance_prob(exceedance_data = p2_exceedance_data,
+                        segs_sf = p1_forecast_segs_sf,
+                        out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
     format = "file"
   )
 
