@@ -45,18 +45,27 @@ list(
   ##### Create example data to mimic our 70-segment forecast data for now #####
 
   tar_target(
-    p2_forecast_data_allsegs_madeup,
-    p1_forecast_data %>%
-      filter(model_name == 'DA') %>%
-      filter(lead_time == 1) %>%
-      filter(scenario == "+0cfs") %>%
-      # Force the data to be one row per seg & replace seg ids
-      # and be data all for the same dates
-      dplyr::slice(seq_along(p2_forecast_seg_ids)) %>%
-      mutate(seg_id_nat = p2_forecast_seg_ids,
-             issue_time = head(issue_time,1),
-             time = head(time,1),
-             site_name = NA)
+    p2_forecast_data_allsegs_madeup, {
+      madeup_data <- p1_forecast_data %>%
+        filter(model_name == 'DA') %>%
+        filter(lead_time == 1) %>%
+        filter(scenario == "+0cfs") %>%
+        # Force the data to be one row per seg & replace seg ids
+        # and be data all for the same dates
+        dplyr::slice(seq_along(p2_forecast_seg_ids)) %>%
+        mutate(seg_id_nat = p2_forecast_seg_ids,
+               issue_time = head(issue_time,1),
+               time = head(time,1),
+               site_name = NA)
+      # Don't want all 0s for exceedance to test mapping
+      set.seed(19)
+      madeup_data$prob_exceed_75 <- sample(seq(0,1,by=0.01), nrow(madeup_data))
+      return(madeup_data)
+    }
+  ),
+  tar_target(
+    p2_exceedance_data,
+    p2_forecast_data_allsegs_madeup %>% select(seg_id_nat, time, prob_exceed_75)
   ),
 
   ##### VISUALIZE DATA #####
