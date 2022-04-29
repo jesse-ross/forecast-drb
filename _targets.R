@@ -42,6 +42,22 @@ list(
       mutate(site_label = stringr::word(site_name, 3, -1))
   ),
 
+  ##### Create example data to mimic our 70-segment forecast data for now #####
+
+  tar_target(
+    p2_forecast_data_allsegs_madeup,
+    p1_forecast_data %>%
+      filter(model_name == 'DA') %>%
+      filter(lead_time == 1) %>%
+      filter(scenario == "+0cfs") %>%
+      # Force the data to be one row per seg & replace seg ids
+      # and be data all for the same dates
+      dplyr::slice(seq_along(p2_forecast_seg_ids)) %>%
+      mutate(seg_id_nat = p2_forecast_seg_ids,
+             issue_time = head(issue_time,1),
+             time = head(time,1),
+             site_name = NA)
+  ),
 
   ##### VISUALIZE DATA #####
   tar_target(
