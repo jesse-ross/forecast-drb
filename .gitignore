@@ -11,3 +11,5 @@ _targets/*
 1_fetch/out/*
 1_fetch/in/*
 !*/*/.placeholder
+
+3_visualize/out/*
