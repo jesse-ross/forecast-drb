@@ -24,13 +24,13 @@ list(
   tar_target(p1_ensemble_data, readRDS(p1_ensemble_data_rds)),
 
   # Load spatial segment data
-  tar_target(p1_forcast_segs_shape_rds, '1_fetch/in/forecast_segs_shape.rds', format="file"),
-  tar_target(p1_forcast_segs_sf, readRDS(p1_forcast_segs_shape_rds)),
+  tar_target(p1_forecast_segs_shape_rds, '1_fetch/in/forecast_segs_shape.rds', format="file"),
+  tar_target(p1_forecast_segs_sf, readRDS(p1_forecast_segs_shape_rds)),
 
   ##### Extract some metadata for potentially mapping over #####
 
   tar_target(p2_forecast_dates, unique(p1_forecast_data$time)),
-  tar_target(p2_forecast_seg_ids, unique(p1_forcast_segs_sf$seg_id_nat)),
+  tar_target(p2_forecast_seg_ids, unique(p1_forecast_segs_sf$seg_id_nat)),
   tar_target(p2_forecast_model, unique(p1_forecast_data$model_name)),
   tar_target(p2_forecast_scenario, unique(p1_forecast_data$scenario)),
 
