@@ -8,6 +8,7 @@ tar_option_set(packages = c(
 
 source('2_process/src/temp_utils.R')
 source('3_visualize/src/plot_gradient.R')
+source('3_visualize/src/map_exceedance_prob.R')
 
 list(
 
@@ -24,13 +25,13 @@ list(
   tar_target(p1_ensemble_data, readRDS(p1_ensemble_data_rds)),
 
   # Load spatial segment data
-  tar_target(p1_forcast_segs_shape_rds, '1_fetch/in/forecast_segs_shape.rds', format="file"),
-  tar_target(p1_forcast_segs_sf, readRDS(p1_forcast_segs_shape_rds)),
+  tar_target(p1_forecast_segs_shape_rds, '1_fetch/in/forecast_segs_shape.rds', format="file"),
+  tar_target(p1_forecast_segs_sf, readRDS(p1_forecast_segs_shape_rds)),
 
   ##### Extract some metadata for potentially mapping over #####
 
   tar_target(p2_forecast_dates, unique(p1_forecast_data$time)),
-  tar_target(p2_forecast_seg_ids, unique(p1_forcast_segs_sf$seg_id_nat)),
+  tar_target(p2_forecast_seg_ids, unique(p1_forecast_segs_sf$seg_id_nat)),
   tar_target(p2_forecast_model, unique(p1_forecast_data$model_name)),
   tar_target(p2_forecast_scenario, unique(p1_forecast_data$scenario)),
 
@@ -45,18 +46,27 @@ list(
   ##### Create example data to mimic our 70-segment forecast data for now #####
 
   tar_target(
-    p2_forecast_data_allsegs_madeup,
-    p1_forecast_data %>%
-      filter(model_name == 'DA') %>%
-      filter(lead_time == 1) %>%
-      filter(scenario == "+0cfs") %>%
-      # Force the data to be one row per seg & replace seg ids
-      # and be data all for the same dates
-      dplyr::slice(seq_along(p2_forecast_seg_ids)) %>%
-      mutate(seg_id_nat = p2_forecast_seg_ids,
-             issue_time = head(issue_time,1),
-             time = head(time,1),
-             site_name = NA)
+    p2_forecast_data_allsegs_madeup, {
+      madeup_data <- p1_forecast_data %>%
+        filter(model_name == 'DA') %>%
+        filter(lead_time == 1) %>%
+        filter(scenario == "+0cfs") %>%
+        # Force the data to be one row per seg & replace seg ids
+        # and be data all for the same dates
+        dplyr::slice(seq_along(p2_forecast_seg_ids)) %>%
+        mutate(seg_id_nat = p2_forecast_seg_ids,
+               issue_time = head(issue_time,1),
+               time = head(time,1),
+               site_name = NA)
+      # Don't want all 0s for exceedance to test mapping
+      set.seed(19)
+      madeup_data$prob_exceed_75 <- sample(seq(0,1,by=0.01), nrow(madeup_data))
+      return(madeup_data)
+    }
+  ),
+  tar_target(
+    p2_exceedance_data,
+    p2_forecast_data_allsegs_madeup %>% select(seg_id_nat, time, prob_exceed_75)
   ),
 
   ##### VISUALIZE DATA #####
@@ -67,6 +77,14 @@ list(
                   date_start = "2021-06-28",
                   days_shown = 6,
                   out_file = "3_visualize/out/daily_gradient_interval.png"),
+    format = "file"
+  ),
+
+  tar_target(
+    p3_seg_exceedance_map_png,
+    map_exceedance_prob(exceedance_data = p2_exceedance_data,
+                        segs_sf = p1_forecast_segs_sf,
+                        out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
     format = "file"
   )
 
