@@ -23,15 +23,19 @@ list(
   # Data with calculated 5% CI intervals for ensembles
   tar_target(p1_ci_data_rds, '1_fetch/in/all_mods_with_obs.rds', format="file"),
   tar_target(p1_ci_data, readRDS(p1_ci_data_rds)),
-
-  # OLD DATA `da_noda_all_ensembles.rds` with all ensembles used for gradient intervals 
-  # https://code.usgs.gov/wma/wp/forecast-preprint-code/-/tree/main/in
-  tar_target(p1_ensemble_data_rds, '1_fetch/in/da_noda_all_ensembles.rds', format="file"),
-  tar_target(p1_ensemble_data, readRDS(p1_ensemble_data_rds)),
+  
+  # Model eval
+  tar_target(p1_eval_data_rds, '1_fetch/in/forecast_model_eval.rds', format="file"),
+  tar_target(p1_eval_data, readRDS(p1_eval_data_rds)),
 
   # Load spatial segment data
   tar_target(p1_forecast_segs_shape_rds, '1_fetch/in/forecast_segs_shape.rds', format="file"),
   tar_target(p1_forecast_segs_sf, readRDS(p1_forecast_segs_shape_rds)),
+  
+  # OLD DATA `da_noda_all_ensembles.rds` with all ensembles used for gradient intervals 
+  # https://code.usgs.gov/wma/wp/forecast-preprint-code/-/tree/main/in
+  tar_target(p1_ensemble_data_rds, '1_fetch/in/da_noda_all_ensembles.rds', format="file"),
+  tar_target(p1_ensemble_data, readRDS(p1_ensemble_data_rds)),
 
   ##### Extract some metadata for potentially mapping over #####
 
