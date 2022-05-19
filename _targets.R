@@ -7,7 +7,9 @@ tar_option_set(packages = c(
 ))
 
 source('2_process/src/temp_utils.R')
+source('2_process/src/prep_intervals.R')
 source('3_visualize/src/plot_gradient.R')
+source('3_visualize/src/plot_daily_ci.R')
 source('3_visualize/src/map_exceedance_prob.R')
 
 site_lordville <- 1573
@@ -23,7 +25,7 @@ list(
   tar_target(p1_forecast_data, readRDS(p1_forecast_data_rds)),
   
   # Data with calculated 5% CI intervals for ensembles
-  tar_target(p1_ci_data_rds, '1_fetch/in/all_mods_with_obs.rds', format="file"),
+  tar_target(p1_ci_data_rds, '1_fetch/in/da_noda_ci.rds', format="file"),
   tar_target(p1_ci_data, readRDS(p1_ci_data_rds)),
   
   # Model eval
@@ -63,7 +65,19 @@ list(
       filter(scenario == "+0cfs") %>%
       select(seg_id_nat, time, prob_exceed_75)
   ),
-
+  
+  ## Plotting 1-day out forecasts for a given date
+  tar_target(
+    p2_focal_date,
+    as.Date('2022-01-24')
+  ),
+  # Reshape confidence interval data for plotting
+  tar_target(
+    p2_daily_ci_data, 
+    prep_intervals(ci_data = p1_ci_data,
+                   plot_date = p2_focal_date)
+  ),
+  
   ##### VISUALIZE DATA #####
   tar_target(
     p3_daily_gradient_interval_png,
@@ -81,6 +95,15 @@ list(
                         segs_sf = p1_forecast_segs_sf,
                         out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
     format = "file"
+  ),
+  
+  tar_target(
+    p3_daily_ci_png,
+    plot_daily_ci(ci_interval_data = p2_daily_ci_data,
+                  ci_list = c(0.5, 0.9), 
+                  plot_date = p2_focal_date,
+                  out_file = "3_visualize/out/daily_ci.png"),
+    format = 'file'
   )
 
 )

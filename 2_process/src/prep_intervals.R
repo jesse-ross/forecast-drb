@@ -2,9 +2,7 @@
 #' @description Reshape data for use with 'geom_slabinterval' family from ggdist
 #' @param ci_data forecast data filtered to 1-day out lead time
 #' @param plot_date focal date for 1-day out forecasts
-#' @param ci_list a list of confidence intervals to find upper and lower bounds 
-#' must be a 0.1 degree increment ranging 0.1-0.9
-prep_intervals <- function(ci_data, plot_date, ci_list){
+prep_intervals <- function(ci_data, plot_date){
   
   # filter data to focal date, 1-day out predictions
   ci_interval <- ci_data %>% 
@@ -31,7 +29,7 @@ prep_intervals <- function(ci_data, plot_date, ci_list){
 
   # Reshape data for input to ggdist geom_interval family
   ci_wide <- ci_interval %>%
-    filter(interval != 'median', .width %in% ci_list) %>% 
+    filter(interval != 'median') %>%
     select(-threshold) %>% 
     transform(.width = as.factor(.width)) %>%
     pivot_wider(id_cols = c('seg_id_nat', '.width'), 
