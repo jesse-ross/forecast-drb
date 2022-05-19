@@ -100,7 +100,7 @@ list(
   tar_target(
     p3_daily_ci_png,
     plot_daily_ci(ci_interval_data = p2_daily_ci_data,
-                  ci_list = c(0.5, 0.9), 
+                  ci_list = c(0.5, 0.8, 0.9), 
                   plot_date = p2_focal_date,
                   out_file = "3_visualize/out/daily_ci.png"),
     format = 'file'

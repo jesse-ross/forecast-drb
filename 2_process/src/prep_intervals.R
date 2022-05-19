@@ -10,6 +10,7 @@ prep_intervals <- function(ci_data, plot_date){
     filter(model_name == 'DA') %>%
     filter(lead_time == 1 & time == plot_date) %>%
     select(seg_id_nat, threshold, quantile) %>%
+    mutate(quantile = c_to_f(quantile)) %>%
     # convert percentile increments to upper and lower bounds
     mutate(interval = case_when(
       threshold > 0.5 ~ '.upper', 
