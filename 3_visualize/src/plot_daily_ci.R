@@ -4,6 +4,8 @@
 #' @param ci_interval_data forecast data filtered to 1-day out lead time; output of `prep_intervals()`
 #' @param ci_list a list of confidence intervals to find upper and lower bounds 
 #' must be a 0.1 degree increment ranging 0.1-0.9
+#' @param plot_date focal date for 1-day out forecasts
+#' @param out_file filepath for saving the plot
 plot_daily_ci <- function(ci_interval_data, ci_list, plot_date, out_file){
   
   max_temp <- max(ci_interval_data$.upper)
