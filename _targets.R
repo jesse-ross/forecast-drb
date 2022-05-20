@@ -13,6 +13,7 @@ source('3_visualize/src/plot_daily_ci.R')
 source('3_visualize/src/map_exceedance_prob.R')
 
 site_lordville <- 1573
+focal_date <- '2021-07-04'
 
 list(
 
