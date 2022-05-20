@@ -7,8 +7,13 @@ tar_option_set(packages = c(
 ))
 
 source('2_process/src/temp_utils.R')
+source('2_process/src/prep_intervals.R')
 source('3_visualize/src/plot_gradient.R')
+source('3_visualize/src/plot_daily_ci.R')
 source('3_visualize/src/map_exceedance_prob.R')
+
+site_lordville <- 1573
+focal_date <- '2021-07-04'
 
 list(
 
@@ -16,17 +21,27 @@ list(
 
   # For now, this is a manual process where we download the
   #   files from this GitLab repo to the `1_fetch/in` folder
-  #   https://code.usgs.gov/wma/wp/forecast-preprint-code/-/tree/main/in
+  #   https://code.usgs.gov/wma/wp/forecast-preprint-code/-/tree/fy22_preprint/in
   tar_target(p1_forecast_data_rds, '1_fetch/in/all_mods_with_obs.rds', format="file"),
   tar_target(p1_forecast_data, readRDS(p1_forecast_data_rds)),
-
-  # Data with all ensembles
-  tar_target(p1_ensemble_data_rds, '1_fetch/in/da_noda_all_ensembles.rds', format="file"),
-  tar_target(p1_ensemble_data, readRDS(p1_ensemble_data_rds)),
+  
+  # Data with calculated 5% CI intervals for ensembles
+  tar_target(p1_ci_data_rds, '1_fetch/in/da_noda_ci.rds', format="file"),
+  tar_target(p1_ci_data, readRDS(p1_ci_data_rds)),
+  
+  # Model eval
+  tar_target(p1_eval_data_rds, '1_fetch/in/forecast_model_eval.rds', format="file"),
+  tar_target(p1_eval_data, readRDS(p1_eval_data_rds)),
 
   # Load spatial segment data
+  # These files came from Sam
   tar_target(p1_forecast_segs_shape_rds, '1_fetch/in/forecast_segs_shape.rds', format="file"),
   tar_target(p1_forecast_segs_sf, readRDS(p1_forecast_segs_shape_rds)),
+  
+  # OLD DATA `da_noda_all_ensembles.rds` with all ensembles used for gradient intervals 
+  # https://code.usgs.gov/wma/wp/forecast-preprint-code/-/tree/main/in
+  tar_target(p1_ensemble_data_rds, '1_fetch/in/da_noda_all_ensembles.rds', format="file"),
+  tar_target(p1_ensemble_data, readRDS(p1_ensemble_data_rds)),
 
   ##### Extract some metadata for potentially mapping over #####
 
@@ -43,32 +58,27 @@ list(
       mutate(site_label = stringr::word(site_name, 3, -1))
   ),
 
-  ##### Create example data to mimic our 70-segment forecast data for now #####
-
-  tar_target(
-    p2_forecast_data_allsegs_madeup, {
-      madeup_data <- p1_forecast_data %>%
-        filter(model_name == 'DA') %>%
-        filter(lead_time == 1) %>%
-        filter(scenario == "+0cfs") %>%
-        # Force the data to be one row per seg & replace seg ids
-        # and be data all for the same dates
-        dplyr::slice(seq_along(p2_forecast_seg_ids)) %>%
-        mutate(seg_id_nat = p2_forecast_seg_ids,
-               issue_time = head(issue_time,1),
-               time = head(time,1),
-               site_name = NA)
-      # Don't want all 0s for exceedance to test mapping
-      set.seed(19)
-      madeup_data$prob_exceed_75 <- sample(seq(0,1,by=0.01), nrow(madeup_data))
-      return(madeup_data)
-    }
-  ),
   tar_target(
     p2_exceedance_data,
-    p2_forecast_data_allsegs_madeup %>% select(seg_id_nat, time, prob_exceed_75)
+    p1_forecast_data %>% 
+      filter(model_name == 'DA') %>%
+      filter(lead_time == 1) %>%
+      filter(scenario == "+0cfs") %>%
+      select(seg_id_nat, time, prob_exceed_75)
   ),
-
+  
+  ## Plotting 1-day out forecasts for a given date
+  tar_target(
+    p2_focal_date,
+    as.Date('2022-01-24')
+  ),
+  # Reshape confidence interval data for plotting
+  tar_target(
+    p2_daily_ci_data, 
+    prep_intervals(ci_data = p1_ci_data,
+                   plot_date = p2_focal_date)
+  ),
+  
   ##### VISUALIZE DATA #####
   tar_target(
     p3_daily_gradient_interval_png,
@@ -86,6 +96,15 @@ list(
                         segs_sf = p1_forecast_segs_sf,
                         out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
     format = "file"
+  ),
+  
+  tar_target(
+    p3_daily_ci_png,
+    plot_daily_ci(ci_interval_data = p2_daily_ci_data,
+                  ci_list = c(0.5, 0.8, 0.9), 
+                  plot_date = p2_focal_date,
+                  out_file = "3_visualize/out/daily_ci.png"),
+    format = 'file'
   )
 
 )
