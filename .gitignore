@@ -6,10 +6,11 @@
 *.Rproj
 
 # Target build files
-_targets/*
+_targets/
 
 1_fetch/out/*
 1_fetch/in/*
 !*/*/.placeholder
 
 3_visualize/out/*
+!3_visualize/out/.empty
