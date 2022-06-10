@@ -84,7 +84,7 @@ list(
     p3_daily_gradient_interval_png,
     plot_gradient(ensemble_data = p1_ensemble_data,
                   site_info = p2_site_info,
-                  date_start = "2021-06-28",
+                  date_start = "2022-06-01",
                   days_shown = 6,
                   out_file = "3_visualize/out/daily_gradient_interval.png"),
     format = "file"
