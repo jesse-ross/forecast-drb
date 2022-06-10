@@ -51,6 +51,10 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
     scico::scale_color_scico(palette = "lapaz", 
                             end = 0.5,
                             na.value = "orangered") +
+    # change alpha so that end of confidence interval shows and doesn't fade away
+    scale_slab_alpha_continuous(
+      range = c(.15, 1) #defaul: 0,1
+    ) +
     # tile for mean prediction
     geom_tile(aes(x = time,
                   y = pred_max_temp_f,
