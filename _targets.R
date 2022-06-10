@@ -90,13 +90,13 @@ list(
     format = "file"
   ),
 
-  tar_target(
-    p3_seg_exceedance_map_png,
-    map_exceedance_prob(exceedance_data = p2_exceedance_data,
-                        segs_sf = p1_forecast_segs_sf,
-                        out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
-    format = "file"
-  ),
+  # tar_target(
+  #   p3_seg_exceedance_map_png,
+  #   map_exceedance_prob(exceedance_data = p2_exceedance_data,
+  #                       segs_sf = p1_forecast_segs_sf,
+  #                       out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
+  #   format = "file"
+  # ),
   
   tar_target(
     p3_daily_ci_png,
