@@ -63,16 +63,16 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
               alpha = 1,
               color = NA) +
     # observed temperature
-    geom_point(data = temp_obs, 
-               aes(
-                 x = time,
-                 y = obs_max_temp_f,
-                 color = ifelse(stat(y) > c_to_f(threshold), NA, stat(y))
-               ),
-               shape = 21,
-               stroke = 1,
-               size = 1.25, 
-               fill = "white") +
+    # geom_point(data = temp_obs, 
+    #            aes(
+    #              x = time,
+    #              y = obs_max_temp_f,
+    #              color = ifelse(stat(y) > c_to_f(threshold), NA, stat(y))
+    #            ),
+    #            shape = 21,
+    #            stroke = 1,
+    #            size = 1.25, 
+    #            fill = "white") +
     theme(legend.position = "none",
           axis.text=element_text(size = 6, angle = 0, hjust = 0.5),
           strip.background = element_rect(color = NA, fill = NA),
