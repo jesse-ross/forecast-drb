@@ -53,7 +53,7 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
                             na.value = "orangered") +
     # change alpha so that end of confidence interval shows and doesn't fade away
     scale_slab_alpha_continuous(
-      range = c(.15, 1) #defaul: 0,1
+      range = c(.15, 1) #default: 0,1
     ) +
     # tile for mean prediction
     geom_tile(aes(x = time,
@@ -84,7 +84,9 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
           axis.text.y = element_text(color = c(rep("black", 4), "orangered", "black")),
           panel.background = element_rect(color="grey", fill = NA),
           axis.line = element_line(size = .5, color="gray"),
-          strip.text = element_text(face = "bold"))+
+          strip.text = element_text(face = "bold"),
+          # panel.grid left white marks over facet borders, removed with line below
+          panel.grid = element_blank())+
     scale_y_continuous(position = "left",
                        breaks = seq(55, 75, by = 5)) +
     scale_x_date(breaks = scales::breaks_width("1 day"),
