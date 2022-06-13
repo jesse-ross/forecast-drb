@@ -51,6 +51,10 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
     scico::scale_color_scico(palette = "lapaz", 
                             end = 0.5,
                             na.value = "orangered") +
+    # change alpha so that end of confidence interval shows and doesn't fade away
+    scale_slab_alpha_continuous(
+      range = c(.15, 1) #default: 0,1
+    ) +
     # tile for mean prediction
     geom_tile(aes(x = time,
                   y = pred_max_temp_f,
@@ -63,16 +67,16 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
               alpha = 1,
               color = NA) +
     # observed temperature
-    geom_point(data = temp_obs, 
-               aes(
-                 x = time,
-                 y = obs_max_temp_f,
-                 color = ifelse(stat(y) > c_to_f(threshold), NA, stat(y))
-               ),
-               shape = 21,
-               stroke = 1,
-               size = 1.25, 
-               fill = "white") +
+    # geom_point(data = temp_obs, 
+    #            aes(
+    #              x = time,
+    #              y = obs_max_temp_f,
+    #              color = ifelse(stat(y) > c_to_f(threshold), NA, stat(y))
+    #            ),
+    #            shape = 21,
+    #            stroke = 1,
+    #            size = 1.25, 
+    #            fill = "white") +
     theme(legend.position = "none",
           axis.text=element_text(size = 6, angle = 0, hjust = 0.5),
           strip.background = element_rect(color = NA, fill = NA),
@@ -80,7 +84,9 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
           axis.text.y = element_text(color = c(rep("black", 4), "orangered", "black")),
           panel.background = element_rect(color="grey", fill = NA),
           axis.line = element_line(size = .5, color="gray"),
-          strip.text = element_text(face = "bold"))+
+          strip.text = element_text(face = "bold"),
+          # panel.grid left white marks over facet borders, removed with line below
+          panel.grid = element_blank())+
     scale_y_continuous(position = "left",
                        breaks = seq(55, 75, by = 5)) +
     scale_x_date(breaks = scales::breaks_width("1 day"),
