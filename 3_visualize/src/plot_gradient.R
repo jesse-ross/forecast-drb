@@ -78,7 +78,7 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
     #            size = 1.25, 
     #            fill = "white") +
     theme(legend.position = "none",
-          axis.text=element_text(size = 6, angle = 0, hjust = 0.5),
+          axis.text = element_text(size = 6, angle = 0, hjust = 0.5),
           strip.background = element_rect(color = NA, fill = NA),
           # color for axis labels - throws an error, ignore that
           axis.text.y = element_text(color = c(rep("black", 4), "orangered", "black")),
@@ -92,9 +92,9 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
     scale_x_date(breaks = scales::breaks_width("1 day"),
                  labels = scales::label_date_short()) 
   
-  ggsave(out_file, width = 1600, height = 600, dpi = 300, units = "px")
+  #ggsave(out_file, width = 1600, height = 600, dpi = 300, units = "px")
   
-  return(out_file)
+  #return(out_file)
   
 }
 

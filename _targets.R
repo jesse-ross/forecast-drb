@@ -81,22 +81,30 @@ list(
   
   ##### VISUALIZE DATA #####
   tar_target(
-    p3_daily_gradient_interval_png,
+    # create plot
+    p3_daily_gradient_interval,
     plot_gradient(ensemble_data = p1_ensemble_data,
                   site_info = p2_site_info,
                   date_start = "2021-06-28",
-                  days_shown = 6,
-                  out_file = "3_visualize/out/daily_gradient_interval.png"),
+                  days_shown = 6)
+  ),
+  tar_target(
+    # save plot
+    p3_daily_gradient_interval_png,
+    ggsave(plot = p3_daily_gradient_interval, 
+           filename = "3_visualize/out/daily_gradient_interval.png",
+           width = 1600, height = 600, dpi = 300, units = "px"),
     format = "file"
   ),
 
-  tar_target(
-    p3_seg_exceedance_map_png,
-    map_exceedance_prob(exceedance_data = p2_exceedance_data,
-                        segs_sf = p1_forecast_segs_sf,
-                        out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
-    format = "file"
-  ),
+  # tar_target(
+  #   p3_seg_exceedance_map_png,
+  #   map_exceedance_prob(exceedance_data = p2_exceedance_data,
+  #                       segs_sf = p1_forecast_segs_sf,
+  #                       out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
+  #   format = "file"
+  # ),
+  # 
   
   tar_target(
     p3_daily_ci_png,
