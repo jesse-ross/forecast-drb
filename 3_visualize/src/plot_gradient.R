@@ -91,10 +91,7 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
                        breaks = seq(55, 75, by = 5)) +
     scale_x_date(breaks = scales::breaks_width("1 day"),
                  labels = scales::label_date_short()) 
-  
-  #ggsave(out_file, width = 1600, height = 600, dpi = 300, units = "px")
-  
-  #return(out_file)
+
   
 }
 

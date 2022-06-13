@@ -3,12 +3,14 @@ library(targets)
 tar_option_set(packages = c(
   'tidyverse',
   'ggdist',
-  'sf'
+  'sf',
+  'cowplot'
 ))
 
 source('2_process/src/temp_utils.R')
 source('2_process/src/prep_intervals.R')
 source('3_visualize/src/plot_gradient.R')
+source('3_visualize/src/plot_gradient_legend.R')
 source('3_visualize/src/plot_daily_ci.R')
 source('3_visualize/src/map_exceedance_prob.R')
 
@@ -89,9 +91,16 @@ list(
                   days_shown = 6)
   ),
   tar_target(
+    # create legend
+    p3_daily_gradient_legend,
+    plot_gradient_legend(ensemble_data = p1_ensemble_data,
+                         site_info = p2_site_info)
+  ),
+  tar_target(
     # save plot
     p3_daily_gradient_interval_png,
-    ggsave(plot = p3_daily_gradient_interval, 
+    ggsave(plot = cowplot::plot_grid(p3_daily_gradient_interval, p3_daily_gradient_legend, 
+                                     rel_widths = c(5,1)), 
            filename = "3_visualize/out/daily_gradient_interval.png",
            width = 1600, height = 600, dpi = 300, units = "px"),
     format = "file"
