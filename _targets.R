@@ -44,6 +44,10 @@ list(
   # https://code.usgs.gov/wma/wp/forecast-preprint-code/-/tree/main/in
   tar_target(p1_ensemble_data_rds, '1_fetch/in/da_noda_all_ensembles.rds', format="file"),
   tar_target(p1_ensemble_data, readRDS(p1_ensemble_data_rds)),
+  # this comes from the same link above, with `_obs` added to the filepath due to
+  # shared naming between new and old data
+  tar_target(p1_forecast_data_old_rds, '1_fetch/in/all_mods_with_obs_old.rds', format="file"),
+  tar_target(p1_forecast_old_data, readRDS(p1_forecast_data_old_rds)),
 
   ##### Extract some metadata for potentially mapping over #####
 
