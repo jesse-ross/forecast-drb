@@ -1,27 +1,7 @@
-plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_file){
+plot_gradient <- function(plot_gradient_df, threshold){
   
-  # filter data to a focal time period
-  date_start <- as.Date(date_start)
-  
-  threshold = 23.89 # C
-  
-  plot_df <- ensemble_data %>%
-    filter(model_name == 'DA') %>%
-    mutate(obs_max_temp_f = c_to_f(obs_max_temp_c),
-           pred_max_temp_f = c_to_f(max_temp)
-    ) %>%
-    # subset to time period of interest
-    filter(time %in% seq.Date(from = date_start, to = date_start+days_shown, by = "1 day")) %>%
-    # filter to 1 day out predictions only
-    filter(lead_time == 1) %>%
-    left_join(site_info)
-  
-  # observed max temp
-  temp_obs <- plot_df %>% 
-    distinct(time, site_name, site_label, obs_max_temp_f)
-  
-  # plot 1-day out predictions with mean prediction and observed
-  plot_df %>%
+  # plot 1-day out predictions with mean prediction 
+  plot_gradient_df %>%
     ggplot(
       aes(
         x = time,
@@ -53,7 +33,7 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
                             na.value = "orangered") +
     # change alpha so that end of confidence interval shows and doesn't fade away
     scale_slab_alpha_continuous(
-      range = c(.15, 1) #default: 0,1
+      range = c(0, 1) #default: 0,1
     ) +
     # tile for mean prediction
     geom_tile(aes(x = time,
@@ -66,17 +46,6 @@ plot_gradient <- function(ensemble_data, site_info, date_start, days_shown, out_
               width = .8,
               alpha = 1,
               color = NA) +
-    # observed temperature
-    # geom_point(data = temp_obs, 
-    #            aes(
-    #              x = time,
-    #              y = obs_max_temp_f,
-    #              color = ifelse(stat(y) > c_to_f(threshold), NA, stat(y))
-    #            ),
-    #            shape = 21,
-    #            stroke = 1,
-    #            size = 1.25, 
-    #            fill = "white") +
     theme(legend.position = "none",
           axis.text = element_text(size = 6, angle = 0, hjust = 0.5),
           strip.background = element_rect(color = NA, fill = NA),

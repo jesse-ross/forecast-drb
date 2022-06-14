@@ -9,13 +9,15 @@ tar_option_set(packages = c(
 
 source('2_process/src/temp_utils.R')
 source('2_process/src/prep_intervals.R')
+source('2_process/src/prep_df_gradient.R')
 source('3_visualize/src/plot_gradient.R')
-source('3_visualize/src/plot_gradient_legend.R')
+source('3_visualize/src/merge_plot_legend.R')
 source('3_visualize/src/plot_daily_ci.R')
 source('3_visualize/src/map_exceedance_prob.R')
 
 site_lordville <- 1573
 focal_date <- '2021-07-04'
+threshold_C <- 23.89 # C
 
 list(
 
@@ -69,6 +71,16 @@ list(
       select(seg_id_nat, time, prob_exceed_75)
   ),
   
+  ## Prepping data for plotting `gradientinterval` geom
+  tar_target(
+    plot_gradient_df,
+    prep_gradient(ensemble_data = p1_ensemble_data, 
+                  site_info = p2_site_info, 
+                  date_start = as.Date("2021-06-28"), 
+                  days_shown = 6, 
+                  threshold = threshold_C)
+  ),
+  
   ## Plotting 1-day out forecasts for a given date
   tar_target(
     p2_focal_date,
@@ -85,24 +97,22 @@ list(
   tar_target(
     # create plot
     p3_daily_gradient_interval,
-    plot_gradient(ensemble_data = p1_ensemble_data,
-                  site_info = p2_site_info,
-                  date_start = "2021-06-28",
-                  days_shown = 6)
+    plot_gradient(plot_gradient_df,
+                  threshold = threshold_C)
   ),
   tar_target(
-    # create legend
+    # create legend, filter to just one example date and location
     p3_daily_gradient_legend,
-    plot_gradient_legend(ensemble_data = p1_ensemble_data,
-                         site_info = p2_site_info)
+    plot_gradient(plot_gradient_df %>% 
+                    filter(issue_time == "2021-06-28") %>% 
+                    filter(site_label == "Lordville"),
+                  threshold = threshold_C)
   ),
   tar_target(
     # save plot
     p3_daily_gradient_interval_png,
-    ggsave(plot = cowplot::plot_grid(p3_daily_gradient_interval, p3_daily_gradient_legend, 
-                                     rel_widths = c(5,1)), 
-           filename = "3_visualize/out/daily_gradient_interval.png",
-           width = 1600, height = 600, dpi = 300, units = "px"),
+    merge_plot_legend(main_plot = p3_daily_gradient_interval,
+                      legend = p3_daily_gradient_legend),
     format = "file"
   ),
 
