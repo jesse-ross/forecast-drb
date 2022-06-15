@@ -3,17 +3,21 @@ library(targets)
 tar_option_set(packages = c(
   'tidyverse',
   'ggdist',
-  'sf'
+  'sf',
+  'cowplot'
 ))
 
 source('2_process/src/temp_utils.R')
 source('2_process/src/prep_intervals.R')
+source('2_process/src/prep_df_gradient.R')
 source('3_visualize/src/plot_gradient.R')
+source('3_visualize/src/merge_plot_legend.R')
 source('3_visualize/src/plot_daily_ci.R')
 source('3_visualize/src/map_exceedance_prob.R')
 
 site_lordville <- 1573
 focal_date <- '2021-07-04'
+threshold_C <- 23.89 # C
 
 list(
 
@@ -42,6 +46,10 @@ list(
   # https://code.usgs.gov/wma/wp/forecast-preprint-code/-/tree/main/in
   tar_target(p1_ensemble_data_rds, '1_fetch/in/da_noda_all_ensembles.rds', format="file"),
   tar_target(p1_ensemble_data, readRDS(p1_ensemble_data_rds)),
+  # this comes from the same link above, with `_obs` added to the filepath due to
+  # shared naming between new and old data
+  tar_target(p1_forecast_data_old_rds, '1_fetch/in/all_mods_with_obs_old.rds', format="file"),
+  tar_target(p1_forecast_old_data, readRDS(p1_forecast_data_old_rds)),
 
   ##### Extract some metadata for potentially mapping over #####
 
@@ -67,6 +75,16 @@ list(
       select(seg_id_nat, time, prob_exceed_75)
   ),
   
+  ## Prepping data for plotting `gradientinterval` geom
+  tar_target(
+    p2_plot_gradient_df,
+    prep_gradient(ensemble_data = p1_ensemble_data, 
+                  site_info = p2_site_info, 
+                  date_start = as.Date("2021-06-28"), 
+                  days_shown = 6, 
+                  threshold = threshold_C)
+  ),
+  
   ## Plotting 1-day out forecasts for a given date
   tar_target(
     p2_focal_date,
@@ -81,22 +99,35 @@ list(
   
   ##### VISUALIZE DATA #####
   tar_target(
+    # create plot
+    p3_daily_gradient_interval,
+    plot_gradient(p2_plot_gradient_df,
+                  threshold = threshold_C)
+  ),
+  tar_target(
+    # create legend, filter to just one example date and location
+    p3_daily_gradient_legend,
+    plot_gradient(p2_plot_gradient_df %>% 
+                    filter(issue_time == "2021-06-28") %>% 
+                    filter(site_label == "Lordville"),
+                  threshold = threshold_C)
+  ),
+  tar_target(
+    # save plot
     p3_daily_gradient_interval_png,
-    plot_gradient(ensemble_data = p1_ensemble_data,
-                  site_info = p2_site_info,
-                  date_start = "2021-06-28",
-                  days_shown = 6,
-                  out_file = "3_visualize/out/daily_gradient_interval.png"),
+    merge_plot_legend(main_plot = p3_daily_gradient_interval,
+                      legend = p3_daily_gradient_legend),
     format = "file"
   ),
 
-  tar_target(
-    p3_seg_exceedance_map_png,
-    map_exceedance_prob(exceedance_data = p2_exceedance_data,
-                        segs_sf = p1_forecast_segs_sf,
-                        out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
-    format = "file"
-  ),
+  # tar_target(
+  #   p3_seg_exceedance_map_png,
+  #   map_exceedance_prob(exceedance_data = p2_exceedance_data,
+  #                       segs_sf = p1_forecast_segs_sf,
+  #                       out_file = "3_visualize/out/map_segment_exceedance_prob.png"),
+  #   format = "file"
+  # ),
+  # 
   
   tar_target(
     p3_daily_ci_png,
