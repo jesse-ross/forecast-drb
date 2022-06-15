@@ -107,7 +107,7 @@ list(
   tar_target(
     # create legend, filter to just one example date and location
     p3_daily_gradient_legend,
-    plot_gradient(plot_gradient_df %>% 
+    plot_gradient(p2_plot_gradient_df %>% 
                     filter(issue_time == "2021-06-28") %>% 
                     filter(site_label == "Lordville"),
                   threshold = threshold_C)
