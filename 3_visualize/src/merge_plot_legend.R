@@ -1,4 +1,4 @@
-merge_plot_legend <- function(main_plot, legend){
+merge_plot_legend <- function(main_plot, legend, out_file){
   
   # Add labels and annotation to legend before combining
   legend_updated <- legend +
@@ -20,10 +20,10 @@ merge_plot_legend <- function(main_plot, legend){
              arrow = arrow(length = unit(0.1, "cm")), colour = "orangered")+
     draw_label("threshold", x = .96, y = .705, size = 6, colour = "orangered")+
     # and annotate mean
-    draw_label("Mean", colour = "darkgreen", x = 0.95, y = 0.6, size = 8)+
-    annotate("segment", xend = 0.903, x = 0.92, yend = 0.56, y = 0.56, 
+    draw_label("Mean", colour = "darkgreen", x = 0.95, y = 0.515, size = 8)+
+    annotate("segment", xend = 0.903, x = 0.92, yend = 0.515, y = 0.515, 
              arrow = arrow(length = unit(0.1, "cm")), colour = "darkgreen")
   
-  ggsave(filename = "3_visualize/out/daily_gradient_interval.png",
+  ggsave(filename = out_file,
          width = 1600, height = 600, dpi = 300, units = "px", bg = "white")
 }
