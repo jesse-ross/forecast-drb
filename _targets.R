@@ -77,7 +77,7 @@ list(
   
   ## Prepping data for plotting `gradientinterval` geom
   tar_target(
-    plot_gradient_df,
+    p2_plot_gradient_df,
     prep_gradient(ensemble_data = p1_ensemble_data, 
                   site_info = p2_site_info, 
                   date_start = as.Date("2021-06-28"), 
