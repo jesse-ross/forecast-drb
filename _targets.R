@@ -101,7 +101,7 @@ list(
   tar_target(
     # create plot
     p3_daily_gradient_interval,
-    plot_gradient(plot_gradient_df,
+    plot_gradient(p2_plot_gradient_df,
                   threshold = threshold_C)
   ),
   tar_target(
