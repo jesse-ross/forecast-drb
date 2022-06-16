@@ -12,8 +12,11 @@ plot_interval <- function(plot_gradient_df, threshold){
          y = "Max temperature (F)") +
     # panel for each site
     facet_grid(~ site_label) + 
+    stat_gradientinterval(shape = NA,
+                          aes(fill = ifelse(stat(y) > c_to_f(threshold), NA, "none")),
+                          size = 1) +
     stat_interval(.width = seq(0.1, 0.9, by = 0.1), #set CI levels
-                  width = 0.1) +
+                  size = 2) +
     # gradient color scale, using red for NA (over threshold)
     scico::scale_fill_scico_d(palette = "lapaz", 
                               end = 0.7,
@@ -23,6 +26,10 @@ plot_interval <- function(plot_gradient_df, threshold){
                             end = 0.5,
                             na.value = "orangered",
                             direction = -1)+
+    # change alpha so that end of confidence interval shows and doesn't fade away
+    scale_slab_alpha_continuous(
+      range = c(0.5, 1) #default: 0,1
+    )+
     # tile for mean prediction
     geom_tile(fill = 'white',
               stat = "summary",
