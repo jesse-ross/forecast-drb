@@ -47,7 +47,7 @@ plot_gradient <- function(plot_gradient_df, threshold){
               alpha = 1,
               color = NA) +
     theme(legend.position = "none",
-          axis.text = element_text(size = 6, angle = 0, hjust = 0.5),
+          axis.text = element_text(size = 5, angle = 0, hjust = 0.5),
           strip.background = element_rect(color = NA, fill = NA),
           # color for axis labels - throws an error, ignore that
           axis.text.y = element_text(color = c(rep("black", 4), "orangered", "black")),
@@ -55,7 +55,8 @@ plot_gradient <- function(plot_gradient_df, threshold){
           axis.line = element_line(size = .5, color="gray"),
           strip.text = element_text(face = "bold"),
           # panel.grid left white marks over facet borders, removed with line below
-          panel.grid = element_blank())+
+          panel.grid = element_blank(),
+          axis.title.y = element_text(size = 8))+
     scale_y_continuous(position = "left",
                        breaks = seq(55, 75, by = 5)) +
     scale_x_date(breaks = scales::breaks_width("1 day"),
