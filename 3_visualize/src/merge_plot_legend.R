@@ -34,7 +34,7 @@ merge_plot_legend <- function(main_plot, legend, out_file, show_all_predicted){
       draw_label("     Predicted \nvalues", x = 0.93, y = 0.3, 
                  size = 6, color = "white")
     }
-      }
+    }
     
   
   
