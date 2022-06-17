@@ -127,7 +127,9 @@ list(
     # create plot
     p3_daily_interval,
     plot_interval(p2_plot_gradient_df,
-                  threshold = threshold_C)
+                  threshold = threshold_C,
+                  # show_all_predicted displays the brown backgrounds with TRUE
+                  show_all_predicted = F)
   ),
   tar_target(
     # create legend, filter to just one example date and location
@@ -135,13 +137,17 @@ list(
     plot_interval(p2_plot_gradient_df %>% 
                     filter(issue_time == "2021-06-28") %>% 
                     filter(site_label == "Lordville"),
-                  threshold = threshold_C)
+                  threshold = threshold_C,
+                  # show_all_predicted displays the brown backgrounds with TRUE
+                  show_all_predicted = F)
   ),
   tar_target(
     # save plot
     p3_daily_interval_png,
     merge_plot_legend(main_plot = p3_daily_interval,
                       legend = p3_daily_interval_legend,
+                      # show_all_predicted displays the brown backgrounds with TRUE
+                      show_all_predicted = F,
                       out_file = "3_visualize/out/daily_interval.png"),
     format = "file"
   ),

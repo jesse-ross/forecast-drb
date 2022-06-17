@@ -1,4 +1,4 @@
-merge_plot_legend <- function(main_plot, legend, out_file){
+merge_plot_legend <- function(main_plot, legend, out_file, show_all_predicted){
   
   # Add labels and annotation to legend before combining
   legend_updated <- legend +
@@ -25,10 +25,17 @@ merge_plot_legend <- function(main_plot, legend, out_file){
              arrow = arrow(length = unit(0.1, "cm")), colour = "darkgreen")+
     # and 90% CI
     draw_label("{", x = 0.9, y = 0.47, size = 20, angle = 180, color = "cadetblue3")+
-    draw_label("+/- 90% CI", colour = "cadetblue3", x = 0.95, y = 0.47, size = 7)+
+    draw_label("\u00B1 90% CI", colour = "cadetblue3", x = 0.95, y = 0.47, size = 7)+
     # and complete values
-    draw_label("     Predicted \nvalues", x = 0.93, y = 0.3, 
-               size = 6, color = "cornsilk3")
+    {if(show_all_predicted == TRUE){
+      draw_label("     Predicted \nvalues", x = 0.93, y = 0.3, 
+                 size = 6, color = "cornsilk3")
+    } else {
+      draw_label("     Predicted \nvalues", x = 0.93, y = 0.3, 
+                 size = 6, color = "white")
+    }
+      }
+    
   
   
   ggsave(filename = out_file,
