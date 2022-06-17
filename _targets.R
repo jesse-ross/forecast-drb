@@ -19,7 +19,7 @@ source('3_visualize/src/map_exceedance_prob.R')
 site_lordville <- 1573
 focal_date <- '2021-07-04'
 threshold_C <- 23.89 # C
-show_all_predicted <- T # show_all_predicted displays the brown backgrounds with TRUE
+show_all_predicted <- F # show_all_predicted displays the brown backgrounds with TRUE
 
 list(
 
