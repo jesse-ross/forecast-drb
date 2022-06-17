@@ -10,6 +10,7 @@ tar_option_set(packages = c(
 source('2_process/src/temp_utils.R')
 source('2_process/src/prep_intervals.R')
 source('2_process/src/prep_df_gradient.R')
+source('2_process/src/write_legend_df.R')
 source('3_visualize/src/plot_gradient.R')
 source('3_visualize/src/plot_interval.R')
 source('3_visualize/src/merge_plot_legend.R')
@@ -86,6 +87,21 @@ list(
                   days_shown = 6, 
                   threshold = threshold_C)
   ),
+  tar_target(
+    p2_plot_legend_df,
+    prep_gradient(ensemble_data = p1_ensemble_data, 
+                  site_info = p2_site_info, 
+                  date_start = as.Date("2021-06-29"), 
+                  days_shown = 0, 
+                  threshold = threshold_C)
+  ),
+  tar_target(
+    p2_plot_legend_file,
+    write_legend_rds(in_data = p2_plot_legend_df %>%
+                       filter(site_label == "Lordville"),
+                     out_file = "2_process/in/legend_data.Rds"),
+    format = "file"
+  ),
   
   ## Plotting 1-day out forecasts for a given date
   tar_target(
@@ -109,9 +125,7 @@ list(
   tar_target(
     # create legend, filter to just one example date and location
     p3_daily_gradient_legend,
-    plot_gradient(p2_plot_gradient_df %>% 
-                    filter(issue_time == "2021-06-28") %>% 
-                    filter(site_label == "Lordville"),
+    plot_gradient(plot_gradient_df = readRDS(p2_plot_legend_file),
                   threshold = threshold_C)
   ),
   tar_target(
@@ -134,9 +148,7 @@ list(
   tar_target(
     # create legend, filter to just one example date and location
     p3_daily_interval_legend,
-    plot_interval(p2_plot_gradient_df %>% 
-                    filter(issue_time == "2021-06-28") %>% 
-                    filter(site_label == "Lordville"),
+    plot_interval(plot_gradient_df = readRDS(p2_plot_legend_file),
                   threshold = threshold_C,
                   show_all_predicted = show_all_predicted)
   ),
