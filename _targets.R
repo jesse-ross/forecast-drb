@@ -119,7 +119,8 @@ list(
     p3_daily_gradient_interval_png,
     merge_plot_legend(main_plot = p3_daily_gradient_interval,
                       legend = p3_daily_gradient_legend,
-                      out_file = "3_visualize/out/daily_gradient_interval.png"),
+                      out_file = "3_visualize/out/daily_gradient_interval.png",
+                      show_all_predicted = F),
     format = "file"
   ),
   
